@@ -57,10 +57,32 @@ let currentModalTaskId = null, timerInterval=null;
 // --- Utility Functions ---
 function uid(){ return 't_'+Math.random().toString(36).slice(2,9); }
 function esc(s){ return (s||"").toString().replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
+function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; } // New Utility
 
 function initAchievements(){
   achievements = [];
-  for (let i=10;i<=100;i+=10) achievements.push({levelTrigger:i,title:`Hero Tier ${i}`,unlocked:false,unlockedAt:null});
+  // New achievement tiers for a more RPG feel
+  const tiers = [
+    {level: 10, name: "Warrior"},
+    {level: 20, name: "Knight"},
+    {level: 30, name: "Paladin"},
+    {level: 40, name: "Champion"},
+    {level: 50, name: "Grand Master"},
+    {level: 60, name: "Legendary Hero"},
+    {level: 70, name: "Ascendant"},
+    {level: 80, name: "Royal Vanguard"},
+    {level: 90, name: "Sovereign"},
+    {level: 100, name: "Mythical King"}
+  ];
+
+  tiers.forEach(t => {
+    achievements.push({
+      levelTrigger: t.level,
+      title: `${t.name} Tier ${t.level}`,
+      unlocked: false,
+      unlockedAt: null
+    });
+  });
 }
 
 // --- Storage Helpers ---
@@ -78,7 +100,8 @@ function loadAll(){
     level = prog.level ?? (Math.floor(totalXP/XP_PER_LEVEL)+1);
   } else { totalXP=0; level=1; }
   achievements = JSON.parse(localStorage.getItem(STORAGE.ACH) || "[]");
-  if(!achievements || achievements.length===0) initAchievements();
+  // Re-initialize achievements if stored data is missing or doesn't match the expected structure (for a safe update)
+  if(!achievements || achievements.length===0 || achievements.length !== 10) initAchievements();
 }
 
 // --- RENDER ALL / UI Update ---
@@ -304,14 +327,33 @@ function gainXP(amount){
   sparklesBurst();
   totalXP+=amount; const oldLevel=level;
   const newLevel=Math.floor(totalXP/XP_PER_LEVEL)+1;
-  if(newLevel>oldLevel){ for(let L=oldLevel+1;L<=newLevel;L++){ unlockForLevel(L); showLevelUp(L); } level=newLevel; AudioEngine.playLevelUp(); }
+  if(newLevel>oldLevel){ 
+    for(let L=oldLevel+1;L<=newLevel;L++){ 
+      if (L % 5 === 0) { // Check for every 5th level
+        const bonusXP = getRandomInt(100, 300);
+        totalXP += bonusXP; // Apply the bonus immediately
+        showPopup(`✨ Level ${L} Bonus: +${bonusXP} XP!`);
+      }
+      unlockForLevel(L); 
+      showLevelUp(L); 
+    } 
+    level=newLevel; 
+    AudioEngine.playLevelUp(); 
+  }
   saveAll();
   renderAll(); // <--- CRITICAL FIX: Ensure UI updates after XP gain
 }
 
 function unlockForLevel(L){
-  const trigger=Math.floor(L/10)*10;
-  if(trigger>0){ const ach=achievements.find(a=>a.levelTrigger===trigger); if(ach&&!ach.unlocked){ ach.unlocked=true; ach.unlockedAt=Date.now(); saveAll(); showPopup(`🏆 Achievement unlocked: ${ach.title}`); } }
+  // Check for achievements that trigger at this level or lower
+  const ach=achievements.find(a=>a.levelTrigger===L && !a.unlocked);
+  // In case of level skipping, we now check L instead of just a multiple of 10
+  if(ach && !ach.unlocked){
+    ach.unlocked=true;
+    ach.unlockedAt=Date.now();
+    saveAll();
+    showPopup(`🏆 Achievement unlocked: ${ach.title}`);
+  }
 }
 
 function sparklesBurst(){ sparkles.innerHTML=''; for(let i=0;i<8;i++){ const s=document.createElement('div'); s.className='spark'; s.style.left=`${Math.random()*100}%`; s.style.top=`${Math.random()*100}%`; sparkles.appendChild(s); setTimeout(()=>s.remove(),900); } }
