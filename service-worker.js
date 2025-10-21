@@ -1,11 +1,11 @@
 const CACHE_NAME = 'taskhero-app-v1';
 const FILES_TO_CACHE = [
   '/',
-  '/index.html',
-  '/style.css',
-  '/script.js',
-  '/icon-192.png',
-  '/icon-512.png'
+  '/TaskHero/index.html',
+  '/TaskHero/style.css',
+  '/TaskHero/script.js',
+  '/TaskHero/icon-192.png',
+  '/TaskHero/icon-512.png'
 ];
 
 self.addEventListener('install', (evt) => {
