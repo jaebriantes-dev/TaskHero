@@ -423,10 +423,11 @@ window.__TaskHero={tasks,saveAll,loadAll,gainXP};
 
 // === Service Worker Registration ===
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register('/service-worker.js')
+navigator.serviceWorker.register('/TaskHero/service-worker.js', { scope: '/TaskHero/' })
     .then(() => console.log("✅ Service Worker registered"))
     .catch(err => console.log("❌ Service Worker failed:", err));
 }
+
 
 
 
