@@ -1,10 +1,22 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>TaskHero — LEVEL UP</title>
+
+  <!-- ✅ PWA Essentials -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="icon-192.png">
+
+  <!-- ✅ Offline-friendly meta tags -->
+  <meta name="description" content="TaskHero — gamified task manager that works offline!">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Your existing stylesheet -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -132,5 +144,14 @@
   </div>
 
   <script src="script.js"></script>
+
+  <!-- ✅ Register Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(() => console.log('✅ Service Worker Registered'))
+        .catch(err => console.error('❌ Service Worker failed:', err));
+    }
+  </script>
 </body>
 </html>
