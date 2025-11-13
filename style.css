@@ -72,14 +72,7 @@ header{
   flex-shrink:0;
 }
 
-.logo h1{
-  font-size:clamp(1rem,5vw,1.25rem);
-  margin:0;
-  color:#00000000;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+
 
 .header-right{
   display:flex;
@@ -229,5 +222,6 @@ header{
   0%{opacity:1;transform:scale(0.6) translateY(0);}
   100%{opacity:0;transform:scale(1.2) translateY(-0.75rem);}
 }
+
 
 
